@@ -1,9 +1,7 @@
 const socket = io();
-const lista = document.getElementById('lista-confesiones');
 const formulario = document.getElementById('formulario');
 const texto = document.getElementById('texto');
 const contenedor = document.getElementById('confesiones');
-const PASSWORD = 'borrar123';
 
 function mostrar(confesion) {
   const div = document.createElement('div');
@@ -17,9 +15,15 @@ function mostrar(confesion) {
 }
 
 function borrarConfesion(id) {
+  const clave = prompt("Ingresa la contraseña para borrar:");
+  if (clave !== 'borrar123') {
+    alert("Contraseña incorrecta.");
+    return;
+  }
+
   fetch(`/confesiones/${id}`, {
     method: 'DELETE',
-    headers: { 'Authorization': PASSWORD }
+    headers: { 'Authorization': clave }
   });
 }
 
