@@ -1,6 +1,5 @@
 const socket = io();
 const lista = document.getElementById('lista-confesiones');
-const socket = io();
 const formulario = document.getElementById('formulario');
 const texto = document.getElementById('texto');
 const contenedor = document.getElementById('confesiones');
