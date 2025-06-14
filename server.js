@@ -1,34 +1,43 @@
 const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
-
 const app = express();
-const server = http.createServer(app);
-const io = socketIo(server);
-
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
+const path = require('path');
 
 let confesiones = [];
-let nextId = 1;
 
-app.use(express.static('public'));
 app.use(express.json());
+app.use(express.static('public'));
 
-io.on('connection', (socket) => {
-  socket.emit('confesiones-iniciales', confesiones);
-
-  socket.on('nueva-confesion', (texto) => {
-    const nueva = { id: nextId++, texto };
-    confesiones.push(nueva);
-    io.emit('confesion-agregada', nueva);
-  });
-
-  socket.on('eliminar-confesion', ({ id, password }) => {
-    if (password !== ADMIN_PASSWORD) return;
-    confesiones = confesiones.filter(c => c.id !== id);
-    io.emit('confesion-eliminada', id);
-  });
+app.get('/confesiones', (req, res) => {
+  res.json(confesiones);
 });
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`Servidor corriendo en puerto ${PORT}`));
+app.post('/confesiones', (req, res) => {
+  const confesion = { id: Date.now().toString(), texto: req.body.texto };
+  confesiones.push(confesion);
+  io.emit('nuevaConfesion', confesion);
+  res.status(201).json(confesion);
+});
+
+app.delete('/confesiones/:id', (req, res) => {
+  const auth = req.headers.authorization;
+  const PASSWORD = 'borrar123';
+
+  if (auth !== PASSWORD) {
+    return res.status(401).json({ error: 'No autorizado' });
+  }
+
+  const id = req.params.id;
+  confesiones = confesiones.filter(c => c.id !== id);
+  io.emit('confesionEliminada', id);
+  res.sendStatus(200);
+});
+
+io.on('connection', socket => {
+  console.log('Usuario conectado');
+});
+
+http.listen(process.env.PORT || 3000, () => {
+  console.log('Servidor corriendo...');
+});

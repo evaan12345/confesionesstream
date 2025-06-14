@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Confesiones Anónimas</title>
+  <style>
+    body { font-family: Arial; max-width: 600px; margin: 40px auto; }
+    .confesion { border: 1px solid #ccc; padding: 10px; margin: 10px 0; position: relative; }
+    .borrar { position: absolute; top: 10px; right: 10px; background: red; color: white; border: none; cursor: pointer; }
+  </style>
 </head>
 <body>
   <h1>Confesiones Anónimas</h1>
-  <form id="form-confesion">
-    <textarea id="texto" placeholder="Escribe tu confesión..." required></textarea>
-    <button type="submit">Confesar</button>
+  <form id="formulario">
+    <textarea id="texto" rows="4" style="width:100%" placeholder="Escribe tu confesión..."></textarea><br>
+    <button type="submit">Enviar</button>
   </form>
-  <ul id="lista-confesiones"></ul>
-
+  <div id="confesiones"></div>
   <script src="/socket.io/socket.io.js"></script>
   <script src="script.js"></script>
 </body>

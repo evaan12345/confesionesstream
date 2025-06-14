@@ -1,49 +1,47 @@
 const socket = io();
 const lista = document.getElementById('lista-confesiones');
-const form = document.getElementById('form-confesion');
-const textarea = document.getElementById('texto');
+const socket = io();
+const formulario = document.getElementById('formulario');
+const texto = document.getElementById('texto');
+const contenedor = document.getElementById('confesiones');
+const PASSWORD = 'borrar123';
 
-const ES_ADMIN = true; // Cambia a false para visitantes
-const ADMIN_PASSWORD = 'admin123'; // Cambia la contraseña que usas
-
-socket.on('confesiones-iniciales', (confesiones) => {
-  lista.innerHTML = '';
-  confesiones.forEach(agregarElemento);
-});
-
-socket.on('confesion-agregada', (conf) => {
-  agregarElemento(conf);
-});
-
-socket.on('confesion-eliminada', (id) => {
-  const item = document.getElementById(`conf-${id}`);
-  if (item) item.remove();
-});
-
-form.onsubmit = (e) => {
-  e.preventDefault();
-  const texto = textarea.value.trim();
-  if (!texto) return;
-  socket.emit('nueva-confesion', texto);
-  textarea.value = '';
-};
-
-function agregarElemento(conf) {
-  const li = document.createElement('li');
-  li.id = `conf-${conf.id}`;
-  li.textContent = conf.texto;
-
-  if (ES_ADMIN) {
-    const btn = document.createElement('button');
-    btn.textContent = 'Eliminar';
-    btn.onclick = () => {
-      socket.emit('eliminar-confesion', {
-        id: conf.id,
-        password: ADMIN_PASSWORD
-      });
-    };
-    li.appendChild(btn);
-  }
-
-  lista.appendChild(li);
+function mostrar(confesion) {
+  const div = document.createElement('div');
+  div.className = 'confesion';
+  div.id = confesion.id;
+  div.innerHTML = `
+    ${confesion.texto}
+    <button class="borrar" onclick="borrarConfesion('${confesion.id}')">X</button>
+  `;
+  contenedor.prepend(div);
 }
+
+function borrarConfesion(id) {
+  fetch(`/confesiones/${id}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': PASSWORD }
+  });
+}
+
+formulario.addEventListener('submit', e => {
+  e.preventDefault();
+  if (texto.value.trim()) {
+    fetch('/confesiones', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ texto: texto.value.trim() })
+    });
+    texto.value = '';
+  }
+});
+
+fetch('/confesiones')
+  .then(res => res.json())
+  .then(data => data.forEach(mostrar));
+
+socket.on('nuevaConfesion', mostrar);
+socket.on('confesionEliminada', id => {
+  const div = document.getElementById(id);
+  if (div) div.remove();
+});
