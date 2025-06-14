@@ -1,22 +1,75 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Confesiones Anónimas</title>
   <style>
-    body { font-family: Arial; max-width: 600px; margin: 40px auto; }
-    .confesion { border: 1px solid #ccc; padding: 10px; margin: 10px 0; position: relative; }
-    .borrar { position: absolute; top: 10px; right: 10px; background: red; color: white; border: none; cursor: pointer; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .confesion {
+      background: white;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    .borrar {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: crimson;
+      color: white;
+      border: none;
+      padding: 5px 8px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    form {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    input#texto {
+      flex: 1;
+      padding: 10px;
+    }
+    button {
+      padding: 10px;
+      cursor: pointer;
+    }
+    .admin-controls {
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 <body>
+
   <h1>Confesiones Anónimas</h1>
+
+  <div class="admin-controls">
+    <button id="login-btn">Iniciar sesión como admin</button>
+    <button id="logout-btn">Cerrar sesión</button>
+  </div>
+
+  <div id="confesiones"></div>
+
   <form id="formulario">
-    <textarea id="texto" rows="4" style="width:100%" placeholder="Escribe tu confesión..."></textarea><br>
+    <input id="texto" type="text" placeholder="Escribe tu confesión..." required />
     <button type="submit">Enviar</button>
   </form>
-  <div id="confesiones"></div>
+
   <script src="/socket.io/socket.io.js"></script>
-  <script src="script.js"></script>
+  <script src="/script.js"></script>
+
 </body>
 </html>
